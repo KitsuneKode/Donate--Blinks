@@ -82,7 +82,7 @@ export const POST = async (req: Request) => {
         }
       );
     }
-    const connection = new Connection(clusterApiUrl('devnet'));
+    const connection = new Connection(clusterApiUrl('mainnet-beta'));
 
     const TO_PUBLIC_KEY = new PublicKey(
       '5ZVUHrjHtD6tLDScordsosj8wvdXYU2Mu6vjR49xT3Ku'
