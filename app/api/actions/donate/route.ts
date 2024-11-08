@@ -1,19 +1,22 @@
 import {
   ActionGetResponse,
-  ACTIONS_CORS_HEADERS,
   ActionPostRequest,
   ActionPostResponse,
   createPostResponse,
+  createActionHeaders,
 } from '@solana/actions';
 
 import {
-  clusterApiUrl,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   Transaction,
 } from '@solana/web3.js';
+
+const headers = createActionHeaders({
+  chainId: 'mainnet',
+});
 
 export const GET = async (req: Request) => {
   const payload: ActionGetResponse = {
@@ -31,18 +34,18 @@ export const GET = async (req: Request) => {
         },
         {
           type: 'transaction',
-          href: '/api/actions/donate?amount=1',
+          href: '/api/actions/donate?amount=0.5',
           label: '0.5 SOL',
         },
         {
           type: 'transaction',
-          href: '/api/actions/donate?amount=1',
-          label: '1.8 SOL',
+          href: '/api/actions/donate?amount=1.5',
+          label: '1.5 SOL',
         },
         {
           type: 'transaction',
-          href: '/api/actions/donate?amount=2',
-          label: '5 SOL',
+          href: '/api/actions/donate?amount=0.05',
+          label: '0.05 SOL',
         },
         {
           type: 'transaction',
@@ -51,7 +54,8 @@ export const GET = async (req: Request) => {
           parameters: [
             {
               name: 'amount',
-              label: 'Enter a SOL amount',
+              label: 'Enter SOL amount',
+              required: true,
             },
           ],
         },
@@ -59,7 +63,7 @@ export const GET = async (req: Request) => {
     },
   };
 
-  return Response.json(payload, { headers: ACTIONS_CORS_HEADERS });
+  return Response.json(payload, { headers });
 };
 
 export const OPTIONS = GET;
@@ -70,7 +74,7 @@ export const POST = async (req: Request) => {
 
     const body: ActionPostRequest = await req.json();
     let account: PublicKey;
-    let amount: number = 0.1;
+    let amount: number = Number(url.searchParams.get('amount') || 0.01);
 
     try {
       account = new PublicKey(body.account);
@@ -78,15 +82,13 @@ export const POST = async (req: Request) => {
       return Response.json(
         { message: 'Public Key doesnot exists', error },
         {
-          headers: ACTIONS_CORS_HEADERS,
+          headers,
         }
       );
     }
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
+    const connection = new Connection(process.env.RPC_URL!);
 
-    const TO_PUBLIC_KEY = new PublicKey(
-      '5ZVUHrjHtD6tLDScordsosj8wvdXYU2Mu6vjR49xT3Ku'
-    );
+    const TO_PUBLIC_KEY = new PublicKey(process.env.PUBLIC_KEY!);
     if (url.searchParams.has('amount')) {
       const val = url.searchParams.get('amount');
       if (val) {
@@ -114,7 +116,7 @@ export const POST = async (req: Request) => {
       },
     });
 
-    return Response.json(payload, { headers: ACTIONS_CORS_HEADERS });
+    return Response.json(payload, { headers });
   } catch (error) {
     let message;
     if (typeof error == 'string')
@@ -123,7 +125,7 @@ export const POST = async (req: Request) => {
       {
         message,
       },
-      { headers: ACTIONS_CORS_HEADERS }
+      { headers }
     );
   }
 };
