@@ -88,7 +88,7 @@ export const POST = async (req: Request) => {
     }
     const connection = new Connection(process.env.RPC_URL!);
 
-    const TO_PUBLIC_KEY = new PublicKey(process.env.PUBLIC_KEY!);
+    const TO_PUBLIC_KEY = new PublicKey(process.env.NEXT_PUBLIC_KEY!);
     if (url.searchParams.has('amount')) {
       const val = url.searchParams.get('amount');
       if (val) {
