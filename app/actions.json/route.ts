@@ -1,5 +1,7 @@
-import { ACTIONS_CORS_HEADERS, ActionsJson } from '@solana/actions';
-
+import { ActionsJson, createActionHeaders } from '@solana/actions';
+const headers = createActionHeaders({
+  chainId: 'mainnet',
+});
 export const GET = async () => {
   const payload: ActionsJson = {
     rules: [
@@ -17,7 +19,7 @@ export const GET = async () => {
   };
 
   return Response.json(payload, {
-    headers: ACTIONS_CORS_HEADERS,
+    headers,
   });
 };
 
